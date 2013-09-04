@@ -16,8 +16,6 @@ public class GeneratePath {
     public GeneratePath(String jobPath,String dataPath){
     	this.jobPath = jobPath;
     	this.dataPath = dataPath;
-    	//String jobPath = "hdfs://192.168.30.42:9000/huyangen/vinaResult/JobID/";
-        //String dataPath = "hdfs://192.168.30.42:9000/huyangen/vina/input";
     }
     
 

@@ -52,11 +52,12 @@ public class Test {
 		Double a= Double.parseDouble(test1.split("\n")[1].split("    ")[1].trim());
 		System.out.println(a);*/
 		HadoopFile hf = new HadoopFile();
-		ArrayList<String> al = hf.listChild("hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data");
+		/*ArrayList<String> al = hf.listChild("hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data");
 		for(int i=0;i<al.size();i++){
 			System.out.println(al.get(i));
-		}
-		
+		}*/
+		System.out.println(hf.readFromHadoop("/huyangen/vinaResult/JobID/20130902/result/ZINC58393027.pdbqt"));
+		//hf.HadoopToLocal("hdfs://192.168.30.42:9000/huyangen/vinaResult/JobID/20130902/result/ZINC58393027.pdbqt", "C:\\Users\\hu\\Desktop\\1.txt");
 		
 	}
 

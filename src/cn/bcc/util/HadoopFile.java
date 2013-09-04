@@ -59,14 +59,11 @@ public class HadoopFile {
 	
 	 public  void createNewHDFSFile(String toCreateFilePath, String content) throws IOException
 	    {
-	        
 		 FileSystem fs = FileSystem.get(conf);   
 	     FSDataOutputStream os = fs.create(new Path(toCreateFilePath));
 	     os.write(content.getBytes("UTF-8"));
 	     os.close();
 	    }
-	
-	
 /**
  * 
  * @param src: local file absoulute path
@@ -76,7 +73,6 @@ public class HadoopFile {
 	
 	public void localToHadoop(String src,String des) throws IOException{
 		FileSystem fs = FileSystem.get(conf);
-		
 		Path desPath = new Path(des);
 		Path srcPath = new Path(src);
 		fs.copyFromLocalFile(srcPath, desPath);
@@ -88,14 +84,13 @@ public class HadoopFile {
 		if(!file.getParentFile().exists()){
 			file.getParentFile().mkdirs();
 		}
-		if(file.exists()){
+		/*if(file.exists()){
 			file.delete();
-		}
+		}*/
 		Path hadoopPath = new Path(hadoop);
 		Path localPath = new Path(local);
 		fs.copyToLocalFile(hadoopPath, localPath);
 	}
-	
 	
 /*
  * delete file or directory
