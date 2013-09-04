@@ -19,7 +19,9 @@ public class Test {
         int bucket = Integer.parseInt(args[1]);
         int topK = 100;
 		job.startJob(jobPath, dataPath, jobID, test, bucket, topK);
+		
+		System.out.println("okay,I got the change");
 	}
 }
 	
-	//test testtest test
+	
