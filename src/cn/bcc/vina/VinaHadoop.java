@@ -6,6 +6,7 @@ import cn.bcc.exception.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -15,7 +16,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobStatus;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -135,7 +138,7 @@ public class VinaHadoop {
 		  gp.createMeta(al, jobID, bucket);
 	  }
 	  
-	  public void startJob(String jobPath,String dataPath,String jobID,ArrayList<String> al,int bucket,int topK) throws IOException, ClassNotFoundException, InterruptedException{
+	  public String startJob(String jobPath,String dataPath,String jobID,ArrayList<String> al,int bucket,int topK) throws IOException, ClassNotFoundException, InterruptedException{
 		  iniJob(jobPath,dataPath,jobID,al,bucket);
 		  Configuration conf =(new HadoopConf()).getConf();
 			FileSystem fs = FileSystem.get(conf);
@@ -151,7 +154,7 @@ public class VinaHadoop {
 			if(fs.exists(path)){
 				fs.delete(path);
 				}
-			Job job = new Job(conf, "vinaHadoop"+jobID);
+			Job job = new Job(conf, jobID);
 			JobConf confs = new JobConf();  
 			confs.setNumReduceTasks(1);
 			confs.setJar("janus.jar"); 
@@ -164,7 +167,13 @@ public class VinaHadoop {
 			job.setOutputValueClass(DataPair.class);
 			FileInputFormat.addInputPath(job, new Path(input));
 			FileOutputFormat.setOutputPath(job, new Path(output));
-			System.exit(job.waitForCompletion(true) ? 0 : 1);
+			//System.exit(job.waitForCompletion(true) ? 0 : 1);
+			job.submit();
+			String result = "jobID:"+job.getJobID().toString()+" jobName:"+job.getJobName();
+			/*InetSocketAddress address = new InetSocketAddress("192.168.30.41",9001);
+			JobClient jobClient =  new JobClient(address,(new HadoopConf()).getConf());
+			JobStatus[] jobStatus = jobClient.getAllJobs();*/
+			return result;
 	  }
 	  
 	  
