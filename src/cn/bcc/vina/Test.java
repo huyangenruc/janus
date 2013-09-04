@@ -19,9 +19,6 @@ public class Test {
         int bucket = Integer.parseInt(args[1]);
         int topK = 100;
 		job.startJob(jobPath, dataPath, jobID, test, bucket, topK);
-		
-		System.out.println("just a test");
-		
 	}
 }
 	
