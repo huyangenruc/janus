@@ -162,8 +162,8 @@ public class HadoopFile {
 					fs.delete(hdfsPath);
 				}
 			}else if(option.equals("result")){
-				flag = getFromHadoop(path+"/result",localPath);
-				flag = getFromHadoop(path+"/order",localPath);
+				flag = getFromHadoop(path+"/result",localPath+"/result");
+				flag = getFromHadoop(path+"/order",localPath+"/order");
 			}else{
 				flag = false;
 				System.out.println("option must equal exceptin or result,check param");

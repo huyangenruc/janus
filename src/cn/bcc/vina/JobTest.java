@@ -61,7 +61,7 @@ public class JobTest {
 		String a = "/a/";
 		a=a.substring(0, a.length()-1);
 		System.out.println(a);
-		boolean test = hf.exportFile("20130905", "exception", "C:\\Users\\hu\\Desktop\\test\\");
+		boolean test = hf.exportFile("20130905", "result", "C:\\Users\\hu\\Desktop\\test\\");
 		System.out.println(test);
 	/*	
 		Job job = new Job((new HadoopConf()).getConf(), "test");
