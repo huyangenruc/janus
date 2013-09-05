@@ -123,25 +123,27 @@ public class HadoopFile {
 		FileSystem fs = FileSystem.get(conf);
 		Path hadoopPath = new Path(hadoopDir);
 		FileStatus[] stats = fs.listStatus(hadoopPath);
-	
-        for(int i=0;i<stats.length;i++){
-        	if(!stats[i].isDir()){
-        		FSDataInputStream in = fs.open(stats[i].getPath()); 	
-        		FileOutputStream fos = new FileOutputStream(localDir+"/"+stats[i].getPath().getName());
-                int bytesRead;
-                byte[] buffer = new byte[4096];
-                while ((bytesRead = in.read(buffer)) > 0) {
-                    fos.write(buffer, 0, bytesRead);
-                }   		 		
-                in.close();
-                fos.close();
-                flag = true;
-        	}else{
-        		String newHadoopDir = stats[i].getPath().toString();
-        		String newLocalDir = localDir+"/"+stats[i].getPath().getName();
-        		flag = getFromHadoop(newHadoopDir,newLocalDir);
-        	}
-        }	
+	    if(stats!=null){
+	    	   for(int i=0;i<stats.length;i++){
+	           	if(!stats[i].isDir()){
+	           		FSDataInputStream in = fs.open(stats[i].getPath()); 	
+	           		FileOutputStream fos = new FileOutputStream(localDir+"/"+stats[i].getPath().getName());
+	                   int bytesRead;
+	                   byte[] buffer = new byte[4096];
+	                   while ((bytesRead = in.read(buffer)) > 0) {
+	                       fos.write(buffer, 0, bytesRead);
+	                   }   		 		
+	                   in.close();
+	                   fos.close();
+	                   flag = true;
+	           	}else{
+	           		String newHadoopDir = stats[i].getPath().toString();
+	           		String newLocalDir = localDir+"/"+stats[i].getPath().getName();
+	           		flag = getFromHadoop(newHadoopDir,newLocalDir);
+	           	}
+	           }	
+	    }
+     
 		return flag;
 	}
 	
@@ -163,7 +165,8 @@ public class HadoopFile {
 				flag = getFromHadoop(path+"/result",localPath);
 				flag = getFromHadoop(path+"/order",localPath);
 			}else{
-				
+				flag = false;
+				System.out.println("option must equal exceptin or result,check param");
 			}
 			return flag;
 			
