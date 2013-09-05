@@ -3,6 +3,7 @@ package cn.bcc.util;
 import cn.bcc.meta.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -56,7 +57,6 @@ public class HadoopFile {
 		os.close();
 	}
 	
-	
 	 public  void createNewHDFSFile(String toCreateFilePath, String content) throws IOException
 	    {
 		 FileSystem fs = FileSystem.get(conf);   
@@ -71,13 +71,18 @@ public class HadoopFile {
  * @throws IOException
  */
 	
-	public void localToHadoop(String src,String des) throws IOException{
+	public boolean localToHadoop(String src,String des) throws IOException{
+		boolean flag = false;
 		FileSystem fs = FileSystem.get(conf);
 		Path desPath = new Path(des);
 		Path srcPath = new Path(src);
 		fs.copyFromLocalFile(srcPath, desPath);
+		flag = fs.exists(desPath);
+		return flag;
 	}
 	
+	
+	//linux version
 	public void HadoopToLocal(String hadoop,String local) throws IOException{
 		FileSystem fs = FileSystem.get(conf);
 		File file = new File(local);
@@ -92,9 +97,81 @@ public class HadoopFile {
 		fs.copyToLocalFile(hadoopPath, localPath);
 	}
 	
+	
+
+	/**
+	 * 
+	 * @param hadoopDir :file directory path on hdfs 
+	 * @param localDir : file directory path on local file system ,eg /home/hadoop 
+	 * @return 
+	 * @throws IOException
+	 */
+	public boolean getFromHadoop(String hadoopDir,String localDir) throws IOException{
+		if(hadoopDir==null||localDir == null){
+			return false;
+		}
+		if(localDir.charAt(localDir.length()-1)=='/'){
+			localDir = localDir.substring(0, localDir.length()-1);
+		}
+		
+		
+		boolean flag = false;
+		File fileDir = new File(localDir);
+		if(!fileDir.exists()){
+			fileDir.mkdirs();
+		}
+		FileSystem fs = FileSystem.get(conf);
+		Path hadoopPath = new Path(hadoopDir);
+		FileStatus[] stats = fs.listStatus(hadoopPath);
+	
+        for(int i=0;i<stats.length;i++){
+        	if(!stats[i].isDir()){
+        		FSDataInputStream in = fs.open(stats[i].getPath()); 	
+        		FileOutputStream fos = new FileOutputStream(localDir+"/"+stats[i].getPath().getName());
+                int bytesRead;
+                byte[] buffer = new byte[4096];
+                while ((bytesRead = in.read(buffer)) > 0) {
+                    fos.write(buffer, 0, bytesRead);
+                }   		 		
+                in.close();
+                fos.close();
+                flag = true;
+        	}else{
+        		String newHadoopDir = stats[i].getPath().toString();
+        		String newLocalDir = localDir+"/"+stats[i].getPath().getName();
+        		flag = getFromHadoop(newHadoopDir,newLocalDir);
+        	}
+        }	
+		return flag;
+	}
+	
+	public boolean exportFile(String vinaJobID,String option,String localPath) throws IOException{
+			boolean flag = false;
+			String path = "/vinaResult/vinaJobID/"+vinaJobID;
+			if(option.equals("exception")){
+				Path hdfsPath = new Path(path+"/exception");
+				FileSystem fs = FileSystem.get(conf);
+				FileStatus[] stats = fs.listStatus(hdfsPath);
+				if(stats==null){
+					flag = false;
+					System.out.println("no exception file");
+				}else{
+					flag = getFromHadoop(path+"/exception",localPath+"/exception");
+					fs.delete(hdfsPath);
+				}
+			}else if(option.equals("result")){
+				flag = getFromHadoop(path+"/result",localPath);
+				flag = getFromHadoop(path+"/order",localPath);
+			}else{
+				
+			}
+			return flag;
+			
+		}
+	
 /*
  * delete file or directory
- * @para file or directory absolute path;
+ * @param file or directory absolute path;
  */
 	public boolean exist(String path) throws IOException{
 		FileSystem fs = FileSystem.get(conf);

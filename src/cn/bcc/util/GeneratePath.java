@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class GeneratePath {
     String jobPath = null;
     String dataPath = null;
-    
+  
     public GeneratePath(String jobPath,String dataPath){
     	this.jobPath = jobPath;
     	this.dataPath = dataPath;

@@ -1,20 +1,38 @@
 package cn.bcc.manage;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.JobID;
 import org.apache.hadoop.mapred.JobStatus;
 
+import cn.bcc.meta.HadoopConf;
+
 public class CheckJob {
 	
 	JobClient jobClient = null;
 	JobStatus[] jobStatus =null ;
 	public CheckJob() throws IOException{
-		jobClient = new JobClient();
+		InetSocketAddress address = new InetSocketAddress("192.168.30.41",9001);
+		jobClient = new JobClient(address,(new HadoopConf()).getConf());
 		jobStatus = jobClient.getAllJobs();
 	}
+	
+	public int checkStatus(String hadoopJobID){
+		int status_int = 0 ;
+		for(int i=0;i<jobStatus.length;i++){
+			if(jobStatus[i].getJobID().toString().equals(hadoopJobID)){
+				status_int = jobStatus[i].getRunState();
+				break;
+			}
+		}
+		return status_int;
+		
+	}
+	
+	
 	public JobID getJobIDByJobName(String jobName){
 		JobID jobID = null;
 		try {
@@ -40,6 +58,7 @@ public class CheckJob {
 	       for (int i = 0; i < jobStatus.length; i++) {
 	           if (jobStatus[i].getJobID().getId() == jobID.getId()) {
 	              status_int = jobStatus[i].getRunState();
+	              
 	              break;
 	           }
 	       }
