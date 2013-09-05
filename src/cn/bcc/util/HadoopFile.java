@@ -158,10 +158,23 @@ public class HadoopFile {
 					flag = false;
 					System.out.println("no exception file");
 				}else{
+					File file = new File(localPath+"/exception");
+					if(!file.exists()){
+						file.mkdirs();
+					}
 					flag = getFromHadoop(path+"/exception",localPath+"/exception");
 					fs.delete(hdfsPath);
 				}
 			}else if(option.equals("result")){
+				File file1 = new File(localPath+"/result");
+				File file2 = new File(localPath+"/order");
+				if(!file1.exists()){
+					file1.mkdirs();
+				}
+				if(!file2.exists()){
+					file2.mkdirs();
+				}
+	
 				flag = getFromHadoop(path+"/result",localPath+"/result");
 				flag = getFromHadoop(path+"/order",localPath+"/order");
 			}else{
