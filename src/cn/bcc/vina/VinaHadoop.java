@@ -6,7 +6,6 @@ import cn.bcc.exception.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -16,9 +15,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.JobStatus;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -64,6 +61,7 @@ public class VinaHadoop {
 	    	receptorLocal = "/home/hadoop/vinaJob/"+tmpPath+"/"+receptorHDFS.substring(receptorHDFS.lastIndexOf("/")+1);
 	    	hf.HadoopToLocal(conf2HDFS, conf2Local);
 	    	hf.HadoopToLocal(receptorHDFS, receptorLocal);
+	    	
 	    }
 	    /*
 	     * (non-Javadoc)
@@ -143,20 +141,21 @@ public class VinaHadoop {
 	  
 	  public String startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
 			 String vinaJobID,int bucket) throws IOException, ClassNotFoundException, InterruptedException{
-		  
+		  String result = "false,"+vinaJobID;
 		  //iniJob(vinaJobID,ligandDir,bucket);
 		  //prepare for job
 		  GeneratePath gp = new GeneratePath(jobPath,srcDataPath);
 		  gp.createMeta(ligandDir, vinaJobID, bucket);
+		  
 		  String confName = confLocalPath.substring(confLocalPath.lastIndexOf("/"));
 		  String confHDFSPath = jobPath+vinaJobID+confName;
 		  String receptorName = receptorLocalPath.substring(receptorLocalPath.lastIndexOf("/"));
 		  String receptorHDFSPATH = jobPath+vinaJobID+receptorName ;
 		  HadoopFile hf = new HadoopFile();
+		  hf.mkdir(jobPath+"/"+vinaJobID+"/exception");
 		  hf.localToHadoop(confLocalPath, confHDFSPath);
 		  hf.localToHadoop(receptorLocalPath,receptorHDFSPATH);
-		  
-		  String flag = "true";
+
 		  Configuration conf =(new HadoopConf()).getConf();
 			FileSystem fs = FileSystem.get(conf);
 			final String input = jobPath+vinaJobID+"/metadata";
@@ -185,7 +184,18 @@ public class VinaHadoop {
 			FileInputFormat.addInputPath(job, new Path(input));
 			FileOutputFormat.setOutputPath(job, new Path(output));
 			job.submit();
-			String result =flag+","+job.getJobID().toString()+","+job.getJobName();
+			result ="true"+job.getJobID().toString()+","+job.getJobName();
 			return result;
 	  }
+	  
+	  public String startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
+				 String vinaJobID) throws IOException, ClassNotFoundException, InterruptedException{
+		  if(confLocalPath==null||receptorLocalPath==null||ligandDir==null||seed==null||vinaJobID==null
+				||ligandDir.size()==0|| topK<0 ){
+			  System.out.println("Recheck argments");
+			  return "false,"+vinaJobID;	 
+		  }
+		  return startJob(confLocalPath,receptorLocalPath,ligandDir,seed,topK,vinaJobID,12);
+	  }
+	  
 }

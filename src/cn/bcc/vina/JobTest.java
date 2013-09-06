@@ -31,7 +31,7 @@ public class JobTest {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		// TODO Auto-generated method stub
-		JobClient jobClient = null;
+		/*JobClient jobClient = null;
 		JobStatus[] jobStatus =null ;
 		InetSocketAddress address = new InetSocketAddress("192.168.30.41",9001);
 		jobClient = new JobClient(address,(new HadoopConf()).getConf());
@@ -49,19 +49,19 @@ public class JobTest {
 		CheckJob check =new CheckJob();
 		System.out.println(check.checkStatus("job_201308231723_0196"));	
 		
-		HadoopFile hf = new HadoopFile();
+	*/
 		//System.out.println(hf.localToHadoop("C:\\Users\\hu\\Desktop\\test\\2RH1C2.pdbqt", "/huyangen/2RH1C2.pdbqt"));
 		//hf.localToHadoop("C:\\Users\\hu\\Desktop\\test\\2RH1C2.pdbqt", "/huyangen/vinaResult");
 		//hf.HadoopToLocal("/huyangen/2RH1C2.pdbqt", "C:\\Users\\hu\\Desktop\\test");
-		
+		HadoopFile hf = new HadoopFile();
 		FileSystem fs = FileSystem.get((new HadoopConf()).getConf());
 		FileStatus[] stats = fs.listStatus(new Path("/huyangen/vinaResult/JobID/20130829"));
 		System.out.println(stats[0].getPath().getName());
-		hf.getFromHadoop("/huyangen/vinaResult/JobID/20130829", "C:\\Users\\hu\\Desktop\\test\\test");
+		//hf.getFromHadoop("/huyangen/vinaResult/JobID/20130829", "C:\\Users\\hu\\Desktop\\test\\test");
 		String a = "/a/";
 		a=a.substring(0, a.length()-1);
 		System.out.println(a);
-		boolean test = hf.exportFile("20130905", "result", "C:\\Users\\hu\\Desktop\\test\\");
+		boolean test = hf.exportFile("20130906_12map120file", "exception", "C:\\Users\\hu\\Desktop\\test\\");
 		System.out.println(test);
 	/*	
 		Job job = new Job((new HadoopConf()).getConf(), "test");

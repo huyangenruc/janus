@@ -20,6 +20,11 @@ public class CheckJob {
 		jobStatus = jobClient.getAllJobs();
 	}
 	
+	/**
+	 * 
+	 * @param hadoopJobID
+	 * @return
+	 */
 	public int checkStatus(String hadoopJobID){
 		int status_int = 0 ;
 		for(int i=0;i<jobStatus.length;i++){
@@ -29,11 +34,10 @@ public class CheckJob {
 			}
 		}
 		return status_int;
-		
 	}
 	
 	
-	public JobID getJobIDByJobName(String jobName){
+	private JobID getJobIDByJobName(String jobName){
 		JobID jobID = null;
 		try {
 			for(int i=0;i<jobStatus.length;i++){
@@ -52,7 +56,7 @@ public class CheckJob {
 	}
 	
 	
-	 public  String getStatusByJobID(JobClient jobClient, JobStatus[] jobStatus, JobID jobID) throws IOException {
+	private  String getStatusByJobID(JobClient jobClient, JobStatus[] jobStatus, JobID jobID) throws IOException {
 	       int status_int = 0;
 	       jobStatus = jobClient.getAllJobs();
 	       for (int i = 0; i < jobStatus.length; i++) {
@@ -85,8 +89,5 @@ public class CheckJob {
 	       return status;
 
 	    }
-	
-	
-	
-	
+
 }

@@ -24,7 +24,7 @@ public class GeneratePath {
  * create metadata info
  */
 	public void createMeta(ArrayList<String> relativePath,String jobID,int buckets) throws IOException{
-		if(relativePath==null||jobID==null||buckets<0||buckets>100){
+		if(relativePath==null||relativePath.size()==0||jobID==null||buckets<0||buckets>100){
 			return;
 		}
 		HadoopFile operation = new HadoopFile();
@@ -34,21 +34,29 @@ public class GeneratePath {
 			ArrayList<String> al = operation.listAll(absolutePath.get(i));
 			items.addAll(al);
 		}
+		
 		if(operation.exist(jobPath+jobID)){
 			operation.delete(jobPath+jobID);
 		}
-		
-		int count = items.size()/buckets; ;
-		for(int i=0;i<buckets-1;i++){
+		if(items.size()==0){
+			return;
+		}		
+		if(items.size()>0&&items.size()<50){
+			buckets=1;
 			ArrayList<String> sub=new ArrayList<String>();
-					sub.addAll(items.subList(i*count, (i+1)*count));
-			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(i)).toString(), sub);
+			sub.addAll(items);
+			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(0)).toString(), sub);
+		}else{
+			int count = items.size()/buckets; 
+			for(int i=0;i<buckets-1;i++){
+				ArrayList<String> sub=new ArrayList<String>();
+						sub.addAll(items.subList(i*count, (i+1)*count));
+				operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(i)).toString(), sub);
+			}
+			ArrayList<String> sub=new ArrayList<String>();
+					sub.addAll(items.subList((buckets-1)*count, items.size()));
+			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
 		}
-		ArrayList<String> sub=new ArrayList<String>();
-				sub.addAll(items.subList((buckets-1)*count, items.size()));
-		operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
-		
-		
 	}
 	
 /**

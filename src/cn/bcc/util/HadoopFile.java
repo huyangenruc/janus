@@ -113,8 +113,6 @@ public class HadoopFile {
 		if(localDir.charAt(localDir.length()-1)=='/'){
 			localDir = localDir.substring(0, localDir.length()-1);
 		}
-		
-		
 		boolean flag = false;
 		File fileDir = new File(localDir);
 		if(!fileDir.exists()){
@@ -123,7 +121,7 @@ public class HadoopFile {
 		FileSystem fs = FileSystem.get(conf);
 		Path hadoopPath = new Path(hadoopDir);
 		FileStatus[] stats = fs.listStatus(hadoopPath);
-	    if(stats!=null){
+	    if(stats!=null&&stats.length!=0){
 	    	   for(int i=0;i<stats.length;i++){
 	           	if(!stats[i].isDir()){
 	           		FSDataInputStream in = fs.open(stats[i].getPath()); 	
@@ -142,8 +140,11 @@ public class HadoopFile {
 	           		flag = getFromHadoop(newHadoopDir,newLocalDir);
 	           	}
 	           }	
+	    }else if(stats.length==0){
+	    	flag = true;
+	    }else{
+	    	flag =false;
 	    }
-     
 		return flag;
 	}
 	
@@ -154,16 +155,16 @@ public class HadoopFile {
 				Path hdfsPath = new Path(path+"/exception");
 				FileSystem fs = FileSystem.get(conf);
 				FileStatus[] stats = fs.listStatus(hdfsPath);
-				if(stats==null){
+				File file = new File(localPath+"/exception");
+				if(!file.exists()){
+					file.mkdirs();
+				}
+				if(stats.length==0||stats==null){
 					flag = false;
 					System.out.println("no exception file");
 				}else{
-					File file = new File(localPath+"/exception");
-					if(!file.exists()){
-						file.mkdirs();
-					}
 					flag = getFromHadoop(path+"/exception",localPath+"/exception");
-					fs.delete(hdfsPath);
+					cleanUp(path+"/exception");
 				}
 			}else if(option.equals("result")){
 				File file1 = new File(localPath+"/result");
@@ -184,6 +185,33 @@ public class HadoopFile {
 			return flag;
 			
 		}
+	
+	public void mkdir(String path) throws IOException{
+		FileSystem fs = FileSystem.get(conf);
+		Path hadoopPath = new Path(path);
+		if(!fs.exists(hadoopPath)){
+			fs.mkdirs(hadoopPath);
+		}
+	}
+	@SuppressWarnings("deprecation")
+	public boolean cleanUp(String path) throws IOException{
+		boolean flag = false;
+		FileSystem fs = FileSystem.get(conf);
+		Path hadoopPath = new Path(path);
+		if(fs.getFileStatus(hadoopPath).isDir()){
+			FileStatus[] stats = fs.listStatus(hadoopPath);
+			if(stats.length==0){
+				flag = true;		
+			}else{
+				for(int i=0;i<stats.length;i++){
+					fs.delete(stats[i].getPath());
+				}
+				flag = true;
+			}
+			
+		}
+	     return flag;
+	}
 	
 /*
  * delete file or directory
@@ -232,7 +260,4 @@ public class HadoopFile {
 		}
 		return al;
 	}
-	
-	
-	
 }
