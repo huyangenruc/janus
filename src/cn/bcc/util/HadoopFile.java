@@ -148,24 +148,34 @@ public class HadoopFile {
 		return flag;
 	}
 	
-	public boolean exportFile(String vinaJobID,String option,String localPath) throws IOException{
+	public boolean exportFile(String vinaJobID,String option,String localPath) {
 			boolean flag = false;
 			String path = "/vinaResult/vinaJobID/"+vinaJobID;
 			if(option.equals("exception")){
 				Path hdfsPath = new Path(path+"/exception");
-				FileSystem fs = FileSystem.get(conf);
-				FileStatus[] stats = fs.listStatus(hdfsPath);
-				File file = new File(localPath+"/exception");
-				if(!file.exists()){
-					file.mkdirs();
+				FileSystem fs;
+				FileStatus[] stats;
+				try {
+					fs = FileSystem.get(conf);
+					stats = fs.listStatus(hdfsPath);
+					File file = new File(localPath+"/exception");
+					if(!file.exists()){
+						file.mkdirs();
+					}
+					if(stats.length==0||stats==null){
+						flag = false;
+						System.out.println("no exception file");
+					}else{
+						flag = getFromHadoop(path+"/exception",localPath+"/exception");
+						cleanUp(path+"/exception");
+					}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return false;
 				}
-				if(stats.length==0||stats==null){
-					flag = false;
-					System.out.println("no exception file");
-				}else{
-					flag = getFromHadoop(path+"/exception",localPath+"/exception");
-					cleanUp(path+"/exception");
-				}
+				
 			}else if(option.equals("result")){
 				File file1 = new File(localPath+"/result");
 				File file2 = new File(localPath+"/order");
@@ -176,14 +186,20 @@ public class HadoopFile {
 					file2.mkdirs();
 				}
 	
-				flag = getFromHadoop(path+"/result",localPath+"/result");
-				flag = getFromHadoop(path+"/order",localPath+"/order");
+				try {
+					flag = getFromHadoop(path+"/result",localPath+"/result");
+					flag = getFromHadoop(path+"/order",localPath+"/order");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return false;
+				}
+				
 			}else{
 				flag = false;
 				System.out.println("option must equal exceptin or result,check param");
 			}
-			return flag;
-			
+			return flag;			
 		}
 	
 	public void mkdir(String path) throws IOException{
@@ -223,7 +239,7 @@ public class HadoopFile {
 		return fs.exists(src);
 		
 	}
-	@SuppressWarnings("deprecation")
+
 	public boolean delete(String path) throws IOException{
 		if(path==null){
 			return false;
@@ -231,7 +247,7 @@ public class HadoopFile {
 		FileSystem fs = FileSystem.get(conf);
 		Path src = new Path(path);
 		boolean success = false;
-		success = fs.delete(src);
+		success = fs.delete(src,true);
 		return success;
 	}
 	@SuppressWarnings("deprecation")

@@ -4,6 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
+import cn.bcc.meta.HadoopConf;
 
 
 
@@ -34,27 +40,30 @@ public class Test {
     }
 	
 	
-	public static void main(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
+	public static void main(String args[]) {
 
-		VinaHadoop job = new VinaHadoop();
+		/*VinaHadoop job = new VinaHadoop();
 		//final String jobPath = "hdfs://192.168.30.42:9000/vinaResult/vinaJobID/";     
 		//final String srcDataPath = "hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data"; 
-	/*	String vinaJobID = "20130906_12map120file";
+		String vinaJobID = "20130909";
 		ArrayList<String> test =new ArrayList<String>();
-		ArrayList<String> al =new ArrayList<String>();
+		//ArrayList<String> al =new ArrayList<String>();
 		test.add("/pdbqt_1");
 		test.add("/pdbqt_10");
 		//test.add("/pdbqt_100");	
 		//HadoopFile hf = new HadoopFile();
         //ArrayList<String> test = hf.listChild("hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data");
-        int bucket = Integer.parseInt("12");
         int topK = 100;
         String confLocaPath = "C:/Users/hu/Desktop/filter/conf2";
         String receptorLocalPATH = "C:/Users/hu/Desktop/filter/2RH1C2.pdbqt";
         String seed = "1351189036";
-		String result = job.startJob(confLocaPath,receptorLocalPATH,test,seed,topK,vinaJobID);
-		System.out.println(result);*/
+		HashMap<String, String> result = job.startJob(confLocaPath,receptorLocalPATH,test,seed,topK,vinaJobID);
+		System.out.println(result.get("flag"));
+		System.out.println(result.get("hadoopID"));
+		System.out.println(result.get("vinaJobID"));
+		System.out.println(result.get("log"));
 		//hint();
+*/	
 	}
 }
 	

@@ -1,8 +1,9 @@
-package cn.bcc.vina;
+package cn.bcc.core;
 
 import cn.bcc.meta.*;
 import cn.bcc.util.*;
 import cn.bcc.exception.*;
+import cn.bcc.vina.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,50 +135,47 @@ public class VinaHadoop {
 	  }
 	 }
 	  
-	  public  HashMap<String,String> startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
-				 String vinaJobID) {
-		  HashMap<String,String> hm = new HashMap<String,String>();
+	  public String startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
+			 String vinaJobID,int bucket) throws IOException, ClassNotFoundException, InterruptedException{
 		  if(confLocalPath==null||receptorLocalPath==null||ligandDir==null||seed==null||vinaJobID==null
-				||ligandDir.size()==0|| topK<0 ){
-			  hm.put("flag", "false");
-			  hm.put("hadoopID", "null");
-			  hm.put("vinaJobID", vinaJobID);
-			  hm.put("log", "error arguments");	 
-			  return hm;	 
-		  }
+					||ligandDir.size()==0|| topK<0 ){
+				  System.out.println("Recheck argments");
+				  return "false"+","+"null"+vinaJobID+","+"error argments";	 
+			  }
+		  String result = "false,"+vinaJobID;
+		  //iniJob(vinaJobID,ligandDir,bucket);
+		  //prepare for job
 		  GeneratePath gp = new GeneratePath(jobPath,srcDataPath);
+		  gp.createMeta(ligandDir, vinaJobID, bucket);
+  
 		  String confName = confLocalPath.substring(confLocalPath.lastIndexOf("/"));
 		  String confHDFSPath = jobPath+vinaJobID+confName;
 		  String receptorName = receptorLocalPath.substring(receptorLocalPath.lastIndexOf("/"));
 		  String receptorHDFSPATH = jobPath+vinaJobID+receptorName ;
-		  HadoopFile hf;
-		  final String input = jobPath+vinaJobID+"/metadata";
-		  final String output = jobPath+vinaJobID+"/order";
-		  Path path = new Path(output);
-		  Configuration conf;
-		  FileSystem fs;
-		  Job job;	  
-		  try {
-			gp.createMeta(ligandDir, vinaJobID);
-			hf = new HadoopFile();
-			hf.mkdir(jobPath+"/"+vinaJobID+"/exception");
-			hf.mkdir(jobPath+"/"+vinaJobID+"/exceptionBackup");
-			hf.localToHadoop(confLocalPath, confHDFSPath);
-			hf.localToHadoop(receptorLocalPath,receptorHDFSPATH);
-			conf = (new HadoopConf()).getConf();
-			fs = FileSystem.get(conf);
+		  HadoopFile hf = new HadoopFile();
+		  hf.mkdir(jobPath+"/"+vinaJobID+"/exception");
+		  hf.mkdir(jobPath+"/"+vinaJobID+"/exceptionBackup");
+		  hf.localToHadoop(confLocalPath, confHDFSPath);
+		  hf.localToHadoop(receptorLocalPath,receptorHDFSPATH);
+
+		  Configuration conf =(new HadoopConf()).getConf();
+			FileSystem fs = FileSystem.get(conf);
+			final String input = jobPath+vinaJobID+"/metadata";
+			final String output = jobPath+vinaJobID+"/order";	
+	
 			conf.set("vinaJobID", vinaJobID);
 			conf.setInt("k", topK);
 			conf.set("conf2HDFS", confHDFSPath);
 			conf.set("receptorHDFS",receptorHDFSPATH);
 			conf.set("seed", seed);
+			Path path = new Path(output);
 			if(fs.exists(path)){
-				fs.delete(path,true);
+				fs.delete(path);
 				}
-			job = new Job(conf, vinaJobID);
+			Job job = new Job(conf, vinaJobID);
 			JobConf confs = new JobConf();  
 			confs.setNumReduceTasks(1);
-			confs.setJar("janus.jar");
+			confs.setJar("janus.jar"); 
 			job.setJarByClass(VinaHadoop.class);
 			job.setMapperClass(VinaMapper.class);
 			job.setReducerClass(VinaReducer.class);
@@ -186,32 +184,11 @@ public class VinaHadoop {
 			job.setOutputKeyClass(DoubleWritable.class);
 			job.setOutputValueClass(DataPair.class);
 			FileInputFormat.addInputPath(job, new Path(input));
-			FileOutputFormat.setOutputPath(job, new Path(output));	
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			  hm.put("flag", "false");
-			  hm.put("hadoopID", "null");
-			  hm.put("vinaJobID", vinaJobID);
-			  hm.put("log", e.getMessage());	 
-			  return hm;
-		}
-
-			try {
-				job.submit();
-			} catch (ClassNotFoundException | IOException
-					| InterruptedException e) {
-				// TODO Auto-generated catch block
-				hm.put("flag", "false");
-				  hm.put("hadoopID", "null");
-				  hm.put("vinaJobID", vinaJobID);
-				  hm.put("log", e.getMessage());
-				  return hm;
-			}
-			hm.put("flag", "true");
-			  hm.put("hadoopID", job.getJobID().toString());
-			  hm.put("vinaJobID", vinaJobID);
-			  hm.put("log", "null");
-			  return hm;
+			FileOutputFormat.setOutputPath(job, new Path(output));
+			job.submit();
+			result ="true"+","+job.getJobID().toString()+","+vinaJobID;
+			return result;
 	  }
+	  
+
 }

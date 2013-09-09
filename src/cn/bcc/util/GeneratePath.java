@@ -1,5 +1,8 @@
 package cn.bcc.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -20,11 +23,56 @@ public class GeneratePath {
     
 
 /*
- * @para relativePath :vina data ,format: /directoryName
+ * @param relativePath :vina data ,format: /directoryName
  * create metadata info
  */
+	public void createMeta(ArrayList<String> relativePath,String jobID) throws IOException{
+		if(relativePath==null||relativePath.size()==0||jobID==null){
+			return;
+		}
+		int buckets = 0;
+		HadoopFile operation = new HadoopFile();
+		ArrayList<String> absolutePath = getHdfsPath(relativePath);
+		ArrayList<String> items = new ArrayList<String>();
+		for (int i=0;i<absolutePath.size();i++){
+			ArrayList<String> al = operation.listAll(absolutePath.get(i));
+			items.addAll(al);
+		}
+		
+		if(operation.exist(jobPath+jobID)){
+			operation.delete(jobPath+jobID);
+		}
+		if(items.size()==0){
+			return;
+		}		
+		
+		if(items.size()>0&&items.size()<50){
+			buckets=1;
+			ArrayList<String> sub=new ArrayList<String>();
+			sub.addAll(items);
+			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(0)).toString(), sub);
+			return;
+		}else if(items.size()>=50&&items.size()<500){
+			buckets=12;
+		}else{
+			buckets = readNode()*6;
+		}
+		int count = items.size()/buckets; 
+		for(int i=0;i<buckets-1;i++){
+			ArrayList<String> sub=new ArrayList<String>();
+					sub.addAll(items.subList(i*count, (i+1)*count));
+			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(i)).toString(), sub);
+		}
+		ArrayList<String> sub=new ArrayList<String>();
+				sub.addAll(items.subList((buckets-1)*count, items.size()));
+		operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
+		return;
+	}
+	
+	
+	
 	public void createMeta(ArrayList<String> relativePath,String jobID,int buckets) throws IOException{
-		if(relativePath==null||relativePath.size()==0||jobID==null||buckets<0||buckets>100){
+		if(relativePath==null||relativePath.size()==0||jobID==null||buckets<0||buckets>1000){
 			return;
 		}
 		HadoopFile operation = new HadoopFile();
@@ -40,12 +88,13 @@ public class GeneratePath {
 		}
 		if(items.size()==0){
 			return;
-		}		
+		}			
 		if(items.size()>0&&items.size()<50){
 			buckets=1;
 			ArrayList<String> sub=new ArrayList<String>();
 			sub.addAll(items);
 			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(0)).toString(), sub);
+			return;
 		}else{
 			int count = items.size()/buckets; 
 			for(int i=0;i<buckets-1;i++){
@@ -56,7 +105,9 @@ public class GeneratePath {
 			ArrayList<String> sub=new ArrayList<String>();
 					sub.addAll(items.subList((buckets-1)*count, items.size()));
 			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
+			return;
 		}
+		
 	}
 	
 /**
@@ -72,9 +123,30 @@ public class GeneratePath {
     	return hdfsPath;
     }
 	
-    
-    
+    private int readNode() {
+    	int numNodes = 3;
+    	File file = new File("conf/node");
+    	FileReader fr = null;
+    	BufferedReader br =null ;
+		try {
+			fr = new FileReader(file);
+			br = new BufferedReader(fr);
+			String line = br.readLine();
+			numNodes = Integer.parseInt(line);	
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			try {
+				br.close();
+				fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	
-
+		return numNodes;
+    }
 
 }
