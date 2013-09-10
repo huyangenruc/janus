@@ -53,9 +53,9 @@ public class GeneratePath {
 			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(0)).toString(), sub);
 			return;
 		}else if(items.size()>=50&&items.size()<500){
-			buckets=12;
+			buckets=15;
 		}else{
-			buckets = readNode()*6;
+			buckets = 18;
 		}
 		int count = items.size()/buckets; 
 		for(int i=0;i<buckets-1;i++){
@@ -71,10 +71,11 @@ public class GeneratePath {
 	
 	
 	
-	public void createMeta(ArrayList<String> relativePath,String jobID,int buckets) throws IOException{
-		if(relativePath==null||relativePath.size()==0||jobID==null||buckets<0||buckets>1000){
+	public void createMeta(ArrayList<String> relativePath,String jobID,int node) throws IOException{
+		if(relativePath==null||relativePath.size()==0||jobID==null){
 			return;
 		}
+		int buckets = 0;
 		HadoopFile operation = new HadoopFile();
 		ArrayList<String> absolutePath = getHdfsPath(relativePath);
 		ArrayList<String> items = new ArrayList<String>();
@@ -88,25 +89,29 @@ public class GeneratePath {
 		}
 		if(items.size()==0){
 			return;
-		}			
+		}		
+		
 		if(items.size()>0&&items.size()<50){
 			buckets=1;
 			ArrayList<String> sub=new ArrayList<String>();
 			sub.addAll(items);
 			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(0)).toString(), sub);
 			return;
+		}else if(items.size()>=50&&items.size()<500){
+			buckets=15;
 		}else{
-			int count = items.size()/buckets; 
-			for(int i=0;i<buckets-1;i++){
-				ArrayList<String> sub=new ArrayList<String>();
-						sub.addAll(items.subList(i*count, (i+1)*count));
-				operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(i)).toString(), sub);
-			}
-			ArrayList<String> sub=new ArrayList<String>();
-					sub.addAll(items.subList((buckets-1)*count, items.size()));
-			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
-			return;
+			buckets = node*6;
 		}
+		int count = items.size()/buckets; 
+		for(int i=0;i<buckets-1;i++){
+			ArrayList<String> sub=new ArrayList<String>();
+					sub.addAll(items.subList(i*count, (i+1)*count));
+			operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(i)).toString(), sub);
+		}
+		ArrayList<String> sub=new ArrayList<String>();
+				sub.addAll(items.subList((buckets-1)*count, items.size()));
+		operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
+		return;
 		
 	}
 	
@@ -123,7 +128,7 @@ public class GeneratePath {
     	return hdfsPath;
     }
 	
-    private int readNode() {
+    public  int readNode() {
     	int numNodes = 3;
     	File file = new File("conf/node");
     	FileReader fr = null;
@@ -148,5 +153,5 @@ public class GeneratePath {
 	
 		return numNodes;
     }
-
+ 
 }

@@ -135,7 +135,7 @@ public class VinaHadoop {
 	  }
 	 }
 	  
-	  public String startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
+	  private String startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
 			 String vinaJobID,int bucket) throws IOException, ClassNotFoundException, InterruptedException{
 		  if(confLocalPath==null||receptorLocalPath==null||ligandDir==null||seed==null||vinaJobID==null
 					||ligandDir.size()==0|| topK<0 ){

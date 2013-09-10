@@ -47,6 +47,12 @@ public class HadoopFile {
 			throw new Exception("the file is not found");
 		}
 	}
+	
+	/**
+	 * @param path :destination path
+	 * @param al :file directory path
+	 * @throws IOException
+	 */
 	public void writeToHadoop(String path,ArrayList<String> al) throws IOException{
 		FileSystem fs = FileSystem.get(conf);
 		Path src = new Path(path);
@@ -57,6 +63,11 @@ public class HadoopFile {
 		os.close();
 	}
 	
+	/**
+	 * @param toCreateFilePath : file path 
+	 * @param content: file content
+	 * @throws IOException
+	 */
 	 public  void createNewHDFSFile(String toCreateFilePath, String content) throws IOException
 	    {
 		 FileSystem fs = FileSystem.get(conf);   
@@ -64,13 +75,13 @@ public class HadoopFile {
 	     os.write(content.getBytes("UTF-8"));
 	     os.close();
 	    }
-/**
- * 
- * @param src: local file absoulute path
- * @param des: destination absolute path,not including hdfs://192.168.30.42:9000
- * @throws IOException
- */
-	
+	 
+	/**
+	 * 
+	 * @param src: local file absoulute path
+	 * @param des: destination absolute path,not including hdfs://192.168.30.42:9000
+	 * @throws IOException
+	 */
 	public boolean localToHadoop(String src,String des) throws IOException{
 		boolean flag = false;
 		FileSystem fs = FileSystem.get(conf);
@@ -81,8 +92,12 @@ public class HadoopFile {
 		return flag;
 	}
 	
-	
-	//linux version
+	/**
+	 * copy file from hadoop to local,sutable for linux ,not windows
+	 * @param hadoop :hadoop path
+	 * @param local:local path
+	 * @throws IOException
+	 */
 	public void HadoopToLocal(String hadoop,String local) throws IOException{
 		FileSystem fs = FileSystem.get(conf);
 		File file = new File(local);
@@ -96,9 +111,6 @@ public class HadoopFile {
 		Path localPath = new Path(local);
 		fs.copyToLocalFile(hadoopPath, localPath);
 	}
-	
-	
-
 	/**
 	 * 
 	 * @param hadoopDir :file directory path on hdfs 
@@ -148,6 +160,13 @@ public class HadoopFile {
 		return flag;
 	}
 	
+	/**
+	 * export vinaHadoop exception file or result to local path
+	 * @param vinaJobID  type :String
+	 * @param option: exception or result,type :String
+	 * @param localPath :local path 
+	 * @return ture or false
+	 */
 	public boolean exportFile(String vinaJobID,String option,String localPath) {
 			boolean flag = false;
 			String path = "/vinaResult/vinaJobID/"+vinaJobID;
@@ -185,7 +204,6 @@ public class HadoopFile {
 				if(!file2.exists()){
 					file2.mkdirs();
 				}
-	
 				try {
 					flag = getFromHadoop(path+"/result",localPath+"/result");
 					flag = getFromHadoop(path+"/order",localPath+"/order");
@@ -201,7 +219,11 @@ public class HadoopFile {
 			}
 			return flag;			
 		}
-	
+	/**
+	 *make directory 
+	 * @param path
+	 * @throws IOException
+	 */
 	public void mkdir(String path) throws IOException{
 		FileSystem fs = FileSystem.get(conf);
 		Path hadoopPath = new Path(path);
@@ -209,7 +231,13 @@ public class HadoopFile {
 			fs.mkdirs(hadoopPath);
 		}
 	}
-	@SuppressWarnings("deprecation")
+	
+	/**
+	 * clean up directory
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean cleanUp(String path) throws IOException{
 		boolean flag = false;
 		FileSystem fs = FileSystem.get(conf);
@@ -220,7 +248,7 @@ public class HadoopFile {
 				flag = true;		
 			}else{
 				for(int i=0;i<stats.length;i++){
-					fs.delete(stats[i].getPath());
+					fs.delete(stats[i].getPath(),true);
 				}
 				flag = true;
 			}
@@ -237,9 +265,14 @@ public class HadoopFile {
 		FileSystem fs = FileSystem.get(conf);
 		Path src = new Path(path);
 		return fs.exists(src);
-		
 	}
-
+	
+	/**
+	 * delete file
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean delete(String path) throws IOException{
 		if(path==null){
 			return false;
@@ -265,6 +298,12 @@ public class HadoopFile {
 		return al;
 	}
 	
+	/**
+	 * list all file path from parent directory
+	 * @param parentDir
+	 * @return
+	 * @throws IOException
+	 */
 	public ArrayList<String> listChild(String parentDir) throws IOException{
 		ArrayList<String> al = new ArrayList<String>();
 		FileSystem fs = FileSystem.get(conf);

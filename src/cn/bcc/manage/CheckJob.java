@@ -10,6 +10,11 @@ import org.apache.hadoop.mapred.JobStatus;
 
 import cn.bcc.meta.HadoopConf;
 
+/**
+ * check hadoop job status
+ * @author hu
+ *
+ */
 public class CheckJob {
 	
 	JobClient jobClient = null;
@@ -21,8 +26,8 @@ public class CheckJob {
 	}
 	
 	/**
-	 * 
-	 * @param hadoopJobID
+	 * check job status through hadoop job id
+	 * @param hadoopJobID 
 	 * @return
 	 */
 	public int checkStatus(String hadoopJobID){
