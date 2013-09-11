@@ -23,8 +23,13 @@ import org.apache.hadoop.fs.Path;
 public class HadoopFile {
 	
 	private static  Configuration conf = null;
-	public HadoopFile() throws IOException{
-		conf = (new HadoopConf()).getConf();
+	public HadoopFile() {
+		try {
+			conf = (new HadoopConf()).getConf();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 /**
  * 

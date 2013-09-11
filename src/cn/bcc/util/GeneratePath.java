@@ -21,11 +21,7 @@ public class GeneratePath {
     	this.dataPath = dataPath;
     }
     
-
 /*
- * @param relativePath :vina data ,format: /directoryName
- * create metadata info
- */
 	public void createMeta(ArrayList<String> relativePath,String jobID) throws IOException{
 		if(relativePath==null||relativePath.size()==0||jobID==null){
 			return;
@@ -67,12 +63,10 @@ public class GeneratePath {
 				sub.addAll(items.subList((buckets-1)*count, items.size()));
 		operation.writeToHadoop(jobPath+jobID+"/metadata/"+(new Integer(buckets-1)).toString(), sub);
 		return;
-	}
-	
-	
+	}*/
 	
 	public void createMeta(ArrayList<String> relativePath,String jobID,int node) throws IOException{
-		if(relativePath==null||relativePath.size()==0||jobID==null){
+		if(relativePath==null||relativePath.size()==0||jobID==null||node<=0||node>1000){
 			return;
 		}
 		int buckets = 0;
@@ -126,32 +120,6 @@ public class GeneratePath {
     		hdfsPath.add(dataPath+item);
     	}
     	return hdfsPath;
-    }
-	
-    public  int readNode() {
-    	int numNodes = 3;
-    	File file = new File("conf/node");
-    	FileReader fr = null;
-    	BufferedReader br =null ;
-		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-			String line = br.readLine();
-			numNodes = Integer.parseInt(line);	
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-			try {
-				br.close();
-				fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	
-		return numNodes;
     }
  
 }

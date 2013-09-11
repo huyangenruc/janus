@@ -149,7 +149,7 @@ public class VinaHadoop {
 	   * @param vinaJobID        vina job ID ,type String
 	   * @return
 	   */
-	  public  HashMap<String,String> startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
+	  /*public  HashMap<String,String> startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
 				 String vinaJobID) {
 		  HashMap<String,String> hm = new HashMap<String,String>();
 		  if(confLocalPath==null||receptorLocalPath==null||ligandDir==null||seed==null||vinaJobID==null
@@ -228,7 +228,7 @@ public class VinaHadoop {
 			  hm.put("vinaJobID", vinaJobID);
 			  hm.put("log", "null");
 			  return hm;
-	  }
+	  }*/
 	  
 	  /**
 	   * start a vina hadoop job
@@ -273,6 +273,9 @@ public class VinaHadoop {
 			hf.localToHadoop(receptorLocalPath,receptorHDFSPATH);
 			conf = (new HadoopConf()).getConf();
 			fs = FileSystem.get(conf);
+			//set heart beat time 45min
+			long milliSeconds = 45*60*1000;
+			conf.setLong("mapred.task.timeout", milliSeconds);
 			conf.set("vinaJobID", vinaJobID);
 			conf.setInt("k", topK);
 			conf.set("conf2HDFS", confHDFSPath);
@@ -292,6 +295,7 @@ public class VinaHadoop {
 			job.setMapOutputValueClass(DataPair.class);
 			job.setOutputKeyClass(DoubleWritable.class);
 			job.setOutputValueClass(DataPair.class);
+			
 			FileInputFormat.addInputPath(job, new Path(input));
 			FileOutputFormat.setOutputPath(job, new Path(output));	
 			
@@ -322,8 +326,21 @@ public class VinaHadoop {
 			  return hm;
 	  }
 	  
-	  
-	  
+	  /**
+	   * 
+	   * @param confLocalPath   conf local path
+	   * @param receptorLocalPath  receptor local path
+	   * @param ligandDir          liangdir path,format: /dirName type: arrayList<String>
+	   * @param seed             seed info ,type:String
+	   * @param topK             top k ,type: int
+	   * @param vinaJobID        vina job ID ,type String
+	   * @return
+	   */
+	  public  HashMap<String,String> startJob(String confLocalPath,String receptorLocalPath,ArrayList<String> ligandDir,String seed,int topK,
+				 String vinaJobID) {
+		  return startJob( confLocalPath, receptorLocalPath, ligandDir, seed, topK,
+					  vinaJobID,3);
+	  }
 	  
 	  
 	  
