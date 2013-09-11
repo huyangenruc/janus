@@ -1,6 +1,7 @@
 package cn.bcc.vina;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -64,9 +65,10 @@ public class Test {
 		System.out.println(result.get("vinaJobID"));
 		System.out.println(result.get("log"));*/
 		//hint();
-		/*HadoopFile hf = new HadoopFile();
-		boolean flag = hf.exportFile("20130910", "result", "C:\\Users\\hu\\Desktop\\test");
+	/*	HadoopFile hf = new HadoopFile();
+		boolean flag = hf.exportFile("20130910", "exception", "C:\\Users\\hu\\Desktop\\test");
 		System.out.println(flag);*/
+		
 
 	}
 }

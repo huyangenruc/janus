@@ -141,7 +141,7 @@ public class HadoopFile {
 	    if(stats!=null&&stats.length!=0){
 	    	   for(int i=0;i<stats.length;i++){
 	           	if(!stats[i].isDir()){
-	           		FSDataInputStream in = fs.open(stats[i].getPath()); 	
+	           		FSDataInputStream in = fs.open(stats[i].getPath());
 	           		FileOutputStream fos = new FileOutputStream(localDir+"/"+stats[i].getPath().getName());
 	                   int bytesRead;
 	                   byte[] buffer = new byte[4096];
@@ -187,8 +187,7 @@ public class HadoopFile {
 						file.mkdirs();
 					}
 					if(stats.length==0||stats==null){
-						flag = false;
-						System.out.println("no exception file");
+						flag = false;				
 					}else{
 						flag = getFromHadoop(path+"/exception",localPath+"/exception");
 						cleanUp(path+"/exception");
