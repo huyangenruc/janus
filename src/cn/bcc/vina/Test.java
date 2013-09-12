@@ -44,10 +44,10 @@ public class Test {
 	
 	public static void main(String args[]) {
 
-/*		VinaHadoop job = new VinaHadoop();
+		VinaHadoop job = new VinaHadoop();
 		//final String jobPath = "hdfs://192.168.30.42:9000/vinaResult/vinaJobID/";     
 		//final String srcDataPath = "hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data"; 
-		String vinaJobID = "20130911";
+		String vinaJobID = "20130912_huyangen";
 		ArrayList<String> test =new ArrayList<String>();
 		//ArrayList<String> al =new ArrayList<String>();
 		test.add("/pdbqt_1");
@@ -63,7 +63,7 @@ public class Test {
 		System.out.println(result.get("flag"));
 		System.out.println(result.get("hadoopID"));
 		System.out.println(result.get("vinaJobID"));
-		System.out.println(result.get("log"));*/
+		System.out.println(result.get("log"));
 		//hint();
 	/*	HadoopFile hf = new HadoopFile();
 		boolean flag = hf.exportFile("20130910", "exception", "C:\\Users\\hu\\Desktop\\test");
