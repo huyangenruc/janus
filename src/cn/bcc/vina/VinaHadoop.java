@@ -158,7 +158,7 @@ public class VinaHadoop {
             }
         }
     }
-
+    
     /**
      * start a vina hadoop job
      * 

@@ -19,6 +19,13 @@ public class GeneratePath {
         this.dataPath = dataPath;
     }
 
+    /**
+     * create metadata info
+     * @param relativePath
+     * @param jobID
+     * @param node
+     * @throws IOException
+     */
     public void createMeta(ArrayList<String> relativePath, String jobID, int node)
             throws IOException {
         if (relativePath == null || relativePath.size() == 0 || jobID == null || node <= 0
