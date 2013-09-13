@@ -56,9 +56,9 @@ public class GeneratePath {
                     sub);
             return;
         } else if (items.size() >= 50 && items.size() < 500) {
-            buckets = 15;
+            buckets = 9;
         } else {
-            buckets = node * 6;
+            buckets = node * 3;
         }
         int count = items.size() / buckets;
         for (int i = 0; i < buckets - 1; i++) {

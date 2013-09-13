@@ -140,7 +140,7 @@ public class HadoopFile {
             fileDir.mkdirs();
         }
         FileSystem fs = FileSystem.get(conf);
-        Path hadoopPath = new Path(hadoopDir);
+        Path hadoopPath = new Path(hadoopDir);   
         FileStatus[] stats = fs.listStatus(hadoopPath);
         if (stats != null && stats.length != 0) {
             for (int i = 0; i < stats.length; i++) {
@@ -156,16 +156,16 @@ public class HadoopFile {
                     in.close();
                     fos.close();
                     flag = true;
-                } else {
+                } else {                    
                     String newHadoopDir = stats[i].getPath().toString();
                     String newLocalDir = localDir + "/" + stats[i].getPath().getName();
                     flag = getFromHadoop(newHadoopDir, newLocalDir);
                 }
             }
-        } else if (stats.length == 0) {
-            flag = true;
-        } else {
+        } else if (stats == null) {
             flag = false;
+        } else {
+            flag = true;
         }
         return flag;
     }
@@ -215,8 +215,10 @@ public class HadoopFile {
                 file2.mkdirs();
             }
             try {
-                flag = getFromHadoop(path + "/result", localPath + "/result");
-                flag = getFromHadoop(path + "/order", localPath + "/order");
+                if(getFromHadoop(path + "/result", localPath + "/result")){
+                    flag = getFromHadoop(path + "/order", localPath + "/order");
+                }
+                
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

@@ -30,7 +30,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  */
 public class VinaHadoop {
     final String jobPath = "hdfs://192.168.30.42:9000/vinaResult/vinaJobID/";
-    final String srcDataPath = "hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data";
+    final String srcDataPath = "hdfs://192.168.30.42:9000/bcc/data";
 
     public static class VinaMapper extends Mapper<Object, Text, DoubleWritable, DataPair> {
         private int k;
