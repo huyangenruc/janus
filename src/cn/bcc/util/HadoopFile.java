@@ -82,6 +82,19 @@ public class HadoopFile {
         os.write(content.getBytes("UTF-8"));
         os.close();
     }
+    
+    public void addToHDFS(String path,String context) throws IOException{
+        FileSystem fs = FileSystem.get(conf);
+        Path hdfsPath = new Path(path);
+        if(!fs.exists(hdfsPath)){
+            FSDataOutputStream os = fs.create(hdfsPath,false);
+            os.write(context.getBytes("UTF-8"));
+            os.close();   
+        }else{
+            FileStatus fileStaus = fs.getFileStatus(hdfsPath);
+           
+        }
+    }
 
     /**
      * 
@@ -140,7 +153,7 @@ public class HadoopFile {
             fileDir.mkdirs();
         }
         FileSystem fs = FileSystem.get(conf);
-        Path hadoopPath = new Path(hadoopDir);   
+        Path hadoopPath = new Path(hadoopDir);
         FileStatus[] stats = fs.listStatus(hadoopPath);
         if (stats != null && stats.length != 0) {
             for (int i = 0; i < stats.length; i++) {
@@ -156,7 +169,7 @@ public class HadoopFile {
                     in.close();
                     fos.close();
                     flag = true;
-                } else {                    
+                } else {
                     String newHadoopDir = stats[i].getPath().toString();
                     String newLocalDir = localDir + "/" + stats[i].getPath().getName();
                     flag = getFromHadoop(newHadoopDir, newLocalDir);
@@ -215,10 +228,10 @@ public class HadoopFile {
                 file2.mkdirs();
             }
             try {
-                if(getFromHadoop(path + "/result", localPath + "/result")){
+                if (getFromHadoop(path + "/result", localPath + "/result")) {
                     flag = getFromHadoop(path + "/order", localPath + "/order");
                 }
-                
+
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

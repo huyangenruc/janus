@@ -44,21 +44,23 @@ public class GeneratePath {
         if (operation.exist(jobPath + jobID)) {
             operation.delete(jobPath + jobID);
         }
-        if (items.size() == 0) {
+        int length = items.size();
+        if (length == 0) {
             return;
         }
 
-        if (items.size() > 0 && items.size() < 50) {
+        if (length > 0 && length < 50) {
             buckets = 1;
             ArrayList<String> sub = new ArrayList<String>();
             sub.addAll(items);
             operation.writeToHadoop(jobPath + jobID + "/metadata/" + (new Integer(0)).toString(),
                     sub);
             return;
-        } else if (items.size() >= 50 && items.size() < 500) {
+        } else if (length >= 50 && length < 2700) {
             buckets = 9;
         } else {
-            buckets = node * 3;
+            // buckets = node * 3;
+            buckets = length / 300;
         }
         int count = items.size() / buckets;
         for (int i = 0; i < buckets - 1; i++) {

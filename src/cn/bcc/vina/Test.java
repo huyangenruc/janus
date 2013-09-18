@@ -1,12 +1,11 @@
 package cn.bcc.vina;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
@@ -38,7 +37,7 @@ public class Test {
     }
 
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
 
        /* VinaHadoop job = new VinaHadoop();
         // final String jobPath = "hdfs://192.168.30.42:9000/vinaResult/vinaJobID/";
@@ -67,7 +66,14 @@ public class Test {
           /*HadoopFile hf = new HadoopFile();
           boolean flag = hf.exportFile("20130909", "exception","C:\\Users\\hu\\Desktop\\test"); 
           System.out.println(flag);*/
-         
+        Configuration conf =(new HadoopConf()).getConf();
+        FileSystem fs = FileSystem.get(conf);
+        Path path = new Path("/vinaResult/vinaJobID/20130909");
+        HadoopFile hf = new HadoopFile();
+        //hf.addToHDFS("/vinaResult/vinaJobID/20130909/huyangen", "huyangen");
+        hf.addToHDFS("/vinaResult/vinaJobID/20130909/huyangen", "huyangen");
+        
+      //  hf.createNewHDFSFile(path, "test");
 
 
     }
