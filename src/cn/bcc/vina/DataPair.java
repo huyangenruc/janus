@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 
 public class DataPair implements WritableComparable<DataPair> {
@@ -26,22 +27,23 @@ public class DataPair implements WritableComparable<DataPair> {
 
     @Override
     public void readFields(DataInput in) throws IOException {
-        // TODO Auto-generated method stub
-        ligandDouble = in.readDouble();
-        ligandPath = in.readUTF();
-        vinaResult = in.readUTF();
-        logPath = in.readUTF();
-        vinaLog = in.readUTF();
+        // TODO Auto-generated method stub    
+        ligandDouble = in.readDouble();     
+        ligandPath = Text.readString(in);  
+        vinaResult = Text.readString(in);   
+        logPath = Text.readString(in);
+        vinaLog = Text.readString(in);
     }
 
     @Override
     public void write(DataOutput out) throws IOException {
         // TODO Auto-generated method stub
         out.writeDouble(ligandDouble);
-        out.writeUTF(ligandPath);
-        out.writeUTF(vinaResult);
-        out.writeUTF(logPath);
-        out.writeUTF(vinaLog);
+        Text.writeString(out, ligandPath);
+        Text.writeString(out, vinaResult);
+        Text.writeString(out, logPath);
+        Text.writeString(out, vinaLog);
+        
     }
 
     public int compareTo(DataPair other) {

@@ -56,11 +56,11 @@ public class GeneratePath {
             operation.writeToHadoop(jobPath + jobID + "/metadata/" + (new Integer(0)).toString(),
                     sub);
             return;
-        } else if (length >= 50 && length < 2700) {
-            buckets = 9;
+        } else if (length >= 50 && length < 500) {
+            buckets = 6;
         } else {
             // buckets = node * 3;
-            buckets = length / 300;
+            buckets = length / 100;
         }
         int count = items.size() / buckets;
         for (int i = 0; i < buckets - 1; i++) {

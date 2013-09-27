@@ -3,13 +3,22 @@ package cn.bcc.vina;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import org.apache.hadoop.http.HtmlQuoting;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobTracker;
 
 import cn.bcc.meta.HadoopConf;
+import cn.bcc.util.FileOperation;
 import cn.bcc.util.HadoopFile;
 
 public class Test {
@@ -35,23 +44,15 @@ public class Test {
             System.exit(-1);
         }
     }
+    
 
+    public static void main(String args[]) throws Exception {
 
-    public static void main(String args[]) throws IOException {
-
-       /* VinaHadoop job = new VinaHadoop();
-        // final String jobPath = "hdfs://192.168.30.42:9000/vinaResult/vinaJobID/";
-        // final String srcDataPath = "hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data";
-        String vinaJobID = "20130912_ganglia";
+        VinaHadoop job = new VinaHadoop();
+        String vinaJobID = "20130927";
         ArrayList<String> test = new ArrayList<String>();
-        // ArrayList<String> al =new ArrayList<String>();
-        test.add("/pdbqt_1");
-        test.add("/pdbqt_10");
-        test.add("/pdbqt_100");
-        // HadoopFile hf = new HadoopFile();
-        // ArrayList<String> test =
-        // hf.listChild("hdfs://192.168.30.42:9000/usr/hadoop/bcc_test1_data");
-        int topK = 50;
+        test.add("/bcc_free");
+        int topK = 100;
         String confLocaPath = "C:/Users/hu/Desktop/filter/conf2";
         String receptorLocalPATH = "C:/Users/hu/Desktop/filter/2RH1C2.pdbqt";
         String seed = "1351189036";
@@ -60,21 +61,8 @@ public class Test {
         System.out.println(result.get("flag"));
         System.out.println(result.get("hadoopID"));
         System.out.println(result.get("vinaJobID"));
-        System.out.println(result.get("log"));*/
-        // hint();
-        
-          /*HadoopFile hf = new HadoopFile();
-          boolean flag = hf.exportFile("20130909", "exception","C:\\Users\\hu\\Desktop\\test"); 
-          System.out.println(flag);*/
-        Configuration conf =(new HadoopConf()).getConf();
-        FileSystem fs = FileSystem.get(conf);
-        Path path = new Path("/vinaResult/vinaJobID/20130909");
-        HadoopFile hf = new HadoopFile();
-        //hf.addToHDFS("/vinaResult/vinaJobID/20130909/huyangen", "huyangen");
-        hf.addToHDFS("/vinaResult/vinaJobID/20130909/huyangen", "huyangen");
-        
-      //  hf.createNewHDFSFile(path, "test");
+        System.out.println(result.get("log"));
 
-
+      
     }
 }

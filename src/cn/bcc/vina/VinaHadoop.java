@@ -158,7 +158,7 @@ public class VinaHadoop {
             }
         }
     }
-    
+
     /**
      * start a vina hadoop job
      * 
@@ -224,8 +224,7 @@ public class VinaHadoop {
             job.setMapOutputKeyClass(DoubleWritable.class);
             job.setMapOutputValueClass(DataPair.class);
             job.setOutputKeyClass(DoubleWritable.class);
-            job.setOutputValueClass(DataPair.class);
-
+            job.setOutputValueClass(Text.class);
             FileInputFormat.addInputPath(job, new Path(input));
             FileOutputFormat.setOutputPath(job, new Path(output));
 
