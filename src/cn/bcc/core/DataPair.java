@@ -15,6 +15,8 @@ public class DataPair implements WritableComparable<DataPair> {
     String vinaLog;
 
     public DataPair() {}
+    
+    
 
     public DataPair(Double ligandDouble, String ligandPath, String vinaResult, String logPath,
             String vinaLog) {
