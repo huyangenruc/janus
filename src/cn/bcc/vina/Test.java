@@ -48,7 +48,7 @@ public class Test {
 
     public static void main(String args[]) throws Exception {
 
-        VinaHadoop job = new VinaHadoop();
+       /* VinaHadoop job = new VinaHadoop();
         String vinaJobID = "20130927";
         ArrayList<String> test = new ArrayList<String>();
         test.add("/bcc_free");
@@ -61,7 +61,7 @@ public class Test {
         System.out.println(result.get("flag"));
         System.out.println(result.get("hadoopID"));
         System.out.println(result.get("vinaJobID"));
-        System.out.println(result.get("log"));
+        System.out.println(result.get("log"));*/
 
       
     }
