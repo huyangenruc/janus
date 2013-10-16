@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2-cdh3u6/lib/xmlenc-0.52.jar"/>
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2-cdh3u6/lib/slf4j-log4j12-1.4.3.jar"/>
@@ -47,5 +48,7 @@
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2-cdh3u6/hadoop-core-0.20.2-cdh3u6.jar"/>
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2-cdh3u6/hadoop-ant-0.20.2-cdh3u6.jar"/>
 	<classpathentry kind="lib" path="janus.jar"/>
+	<classpathentry kind="lib" path="D:/hbase-0.90.6-cdh3u6/hbase-0.90.6-cdh3u6.jar"/>
+	<classpathentry kind="lib" path="D:/hbase-0.90.6-cdh3u6/lib/zookeeper-3.3.5-cdh3u6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

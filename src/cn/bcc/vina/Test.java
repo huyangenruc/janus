@@ -47,11 +47,11 @@ public class Test {
     
 
     public static void main(String args[]) throws Exception {
-
-       /* VinaHadoop job = new VinaHadoop();
-        String vinaJobID = "20130927";
+        
+        VinaHadoop job = new VinaHadoop();
+        String vinaJobID = "20130927_huyangen";
         ArrayList<String> test = new ArrayList<String>();
-        test.add("/bcc_free");
+        test.add("/NP");
         int topK = 100;
         String confLocaPath = "C:/Users/hu/Desktop/filter/conf2";
         String receptorLocalPATH = "C:/Users/hu/Desktop/filter/2RH1C2.pdbqt";
@@ -61,7 +61,7 @@ public class Test {
         System.out.println(result.get("flag"));
         System.out.println(result.get("hadoopID"));
         System.out.println(result.get("vinaJobID"));
-        System.out.println(result.get("log"));*/
+        System.out.println(result.get("log"));
 
       
     }
