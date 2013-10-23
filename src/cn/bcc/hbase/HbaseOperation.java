@@ -7,11 +7,14 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class HbaseOperation {
@@ -83,6 +86,39 @@ public class HbaseOperation {
         //p.add(Bytes.toBytes("family"), Bytes.toBytes("qualifier"), Bytes.toBytes("value"));
         table.put(lp);
     }
-
+    
+    public void queryAll(){
+        try {
+            ResultScanner rs = table.getScanner(new Scan());
+            for (Result r : rs) {  
+                System.out.println("获得到rowkey:" + new String(r.getRow()));  
+                for (KeyValue keyValue : r.raw()) {  
+                    
+                    System.out.println("列：" + new String(keyValue.getFamily())  
+                            + "====值:" +"\n"+ new String(keyValue.getValue()));  
+                }  
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+    }
+    
+    public void query(String rowKey){
+       
+        try {  
+            Get scan = new Get(rowKey.getBytes());// 根据rowkey查询  
+            Result r = table.get(scan);  
+            System.out.println("获得到rowkey:" + new String(r.getRow()));  
+            for (KeyValue keyValue : r.raw()) {  
+                System.out.println("列：" + new String(keyValue.getFamily())  
+                        + "====值:" + "\n"+new String(keyValue.getValue()));  
+            }  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+            
+        }  
+    }
+    
 
 }

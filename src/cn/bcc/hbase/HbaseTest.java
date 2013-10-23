@@ -22,8 +22,15 @@ public class HbaseTest {
      */
     public static void main(String[] args) throws IOException {
         // TODO Auto-generated method stub
-        HbaseOperation hb = new HbaseOperation("bcc_free");
-        hb.createTable("bcc_free", "columnValue");
+       /* HbaseOperation hb = new HbaseOperation("bcc_free");
+        hb.query("bccfree00000998.pdbqt");
+        
+        hb.query("bccfree00000998.pdbqt");
+        hb.query("bccfree00000999.pdbqt");*/
+        
+        HBaseFile hb = new HBaseFile();
+        hb.copyToLocal("bcc_free/bccfree00000998.pdbqt", "C:\\Users\\hu\\Desktop\\filter\\bccfree00000998.pdbqt");
+       /* hb.createTable("bcc_free", "columnValue");
         //hb.putData("bccfree00000000.pdbqt", "columnValue", "value", "its just a test");
         Configuration conf =(new HadoopConf()).getConf();
         FileSystem fs = FileSystem.get(conf);
@@ -55,7 +62,10 @@ public class HbaseTest {
             System.out.println(lp.size());
             hb.putData(lp);
             lp.clear();
-        }
+        }*/
+        
+        
+        
         
     }
     

@@ -156,8 +156,12 @@ public class VinaHadoop {
                 if (count < k) {
                     hf.createNewHDFSFile(val.getLigandPath(), val.getVinaResult());
                     hf.createNewHDFSFile(val.getLogPath(), val.getVinaLog());
+                    int position = val.getLigandPath().lastIndexOf("/");
+                    String ligandName =val.getLigandPath().substring(position+1);                    
                     context.write(new DoubleWritable(val.getLigandDouble()),
-                            new Text(val.getLigandPath()));
+                           new Text(ligandName));                   
+                  /*  context.write(new DoubleWritable(val.getLigandDouble()),
+                            new Text(val.getLigandPath()));*/
                     count++;
                 } else {
                     break;
@@ -245,7 +249,8 @@ public class VinaHadoop {
 
         try {
             if(verbose){
-                System.exit(job.waitForCompletion(true) ? 0 : 1);
+                //System.exit(job.waitForCompletion(true) ? 0 : 1);
+                job.waitForCompletion(true);
             }else{
                 job.submit(); 
             }

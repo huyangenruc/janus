@@ -1,10 +1,13 @@
-package cn.bcc.vina;
+package cn.bcc.hbase;
 
-import cn.bcc.meta.*;
+import cn.bcc.meta.HadoopConf;
 import cn.bcc.util.*;
+import cn.bcc.vina.DataPair;
 import cn.bcc.exception.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +59,7 @@ public class VinaHadoop {
             receptorHDFS = conf.get("receptorHDFS");
             seed = conf.get("seed");
             vinaJobID = conf.get("vinaJobID");
-            k = conf.getInt("k", 100);
+            k = conf.getInt("k", 1000);
             hf = new HadoopFile();
             fo = new FileOperation();
             tmpPath = fo.randomString();
@@ -102,13 +105,6 @@ public class VinaHadoop {
                 String outHdfsPath = "/vinaResult/vinaJobID/" + vinaJobID + "/result/" + ligandName;
                 String result = fo.readFile(out);
                 String logInfo = fo.readFile(log);
-                /*DataPair data =
-                        new DataPair(Double.parseDouble(result.split("\n")[1].split("    ")[1]
-                                .trim()), outHdfsPath, result, logHdfsPath, logInfo);
-                tree.add(data);
-                if (tree.size() > k) {
-                    tree.pollLast();
-                }*/
                 try{
                     DataPair data =
                             new DataPair(Double.parseDouble(result.split("\n")[1].split("    ")[1]
@@ -119,7 +115,8 @@ public class VinaHadoop {
                     }
                 }catch(Exception e){
                     hf.createNewHDFSFile(exceptionPath, path+" bad result");
-                }                
+                }
+               
             } else {
                 hf.createNewHDFSFile(exceptionPath, flag);
                 hf.createNewHDFSFile(exceptionBackupPath, flag);
@@ -149,7 +146,7 @@ public class VinaHadoop {
         protected void setup(Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
             hf = new HadoopFile();
-            k = conf.getInt("k", 50);
+            k = conf.getInt("k", 1000);
         }
 
         // topK sort,write the result to hdfs
@@ -159,10 +156,8 @@ public class VinaHadoop {
                 if (count < k) {
                     hf.createNewHDFSFile(val.getLigandPath(), val.getVinaResult());
                     hf.createNewHDFSFile(val.getLogPath(), val.getVinaLog());
-                     int position = val.getLigandPath().lastIndexOf("/");
-                     String ligandName =val.getLigandPath().substring(position+1);                    
-                     context.write(new DoubleWritable(val.getLigandDouble()),
-                            new Text(ligandName));
+                    context.write(new DoubleWritable(val.getLigandDouble()),
+                            new Text(val.getLigandPath()));
                     count++;
                 } else {
                     break;
@@ -176,18 +171,19 @@ public class VinaHadoop {
      * 
      * @param confLocalPath
      * @param receptorLocalPath
-     * @param ligandDir
+     * @param ligandPath
      * @param seed
      * @param topK
      * @param vinaJobID
      * @param node
      * @return
      */
+    
     public HashMap<String, String> startJob(String confLocalPath, String receptorLocalPath,
-            ArrayList<String> ligandDir, String seed, int topK, String vinaJobID, int node) {
+            ArrayList<String> ligandPath, String seed, int topK, String vinaJobID, int numPerNode,boolean verbose) {
         HashMap<String, String> hm = new HashMap<String, String>();
-        if (confLocalPath == null || receptorLocalPath == null || ligandDir == null || seed == null
-                || vinaJobID == null || ligandDir.size() == 0 || topK < 0) {
+        if (confLocalPath == null || receptorLocalPath == null || ligandPath == null || seed == null
+                || vinaJobID == null || ligandPath.size() == 0 || topK < 0) {
             hm.put("flag", "false");
             hm.put("hadoopID", "null");
             hm.put("vinaJobID", vinaJobID);
@@ -207,7 +203,7 @@ public class VinaHadoop {
         FileSystem fs;
         Job job;
         try {
-            gp.createMeta(ligandDir, vinaJobID, node);
+            gp.createMeta(ligandPath, vinaJobID, numPerNode);
             hf = new HadoopFile();
             hf.mkdir(jobPath + "/" + vinaJobID + "/exception");
             hf.mkdir(jobPath + "/" + vinaJobID + "/exceptionBackup");
@@ -248,7 +244,13 @@ public class VinaHadoop {
         }
 
         try {
-            job.submit();
+            if(verbose){
+                //System.exit(job.waitForCompletion(true) ? 0 : 1);
+                job.waitForCompletion(true);
+            }else{
+                job.submit(); 
+            }
+            
         } catch (ClassNotFoundException | IOException | InterruptedException e) {
             // TODO Auto-generated catch block
             hm.put("flag", "false");
@@ -262,20 +264,102 @@ public class VinaHadoop {
         hm.put("vinaJobID", vinaJobID);
         hm.put("log", "null");
         return hm;
-    }
+    }  
 
     /**
      * 
      * @param confLocalPath conf local path
      * @param receptorLocalPath receptor local path
-     * @param ligandDir liangdir path,format: /dirName type: arrayList<String>
+     * @param ligandPath liangdir path,format: /dirName type: arrayList<String>
      * @param seed seed info ,type:String
      * @param topK top k ,type: int
      * @param vinaJobID vina job ID ,type String
      * @return
      */
     public HashMap<String, String> startJob(String confLocalPath, String receptorLocalPath,
-            ArrayList<String> ligandDir, String seed, int topK, String vinaJobID) {
-        return startJob(confLocalPath, receptorLocalPath, ligandDir, seed, topK, vinaJobID, 3);
+            String ligandPath, String seed, int topK, String vinaJobID,int numPerNode,boolean verbose) {
+        ArrayList<String> al = readLigand(ligandPath);
+        HashMap<String, String> hm = new HashMap<String, String>();
+        if("true".equals(checkLigandPath(al).get("flag"))){
+            return startJob(confLocalPath, receptorLocalPath, al, seed, topK, vinaJobID, numPerNode,verbose);
+        }else{
+            hm.put("flag", "false");
+            hm.put("hadoopID", "null");
+            hm.put("vinaJobID", vinaJobID);
+            hm.put("log", "error arguments,check "+ligandPath);
+            return hm;
+        }
+        
     }
+    
+    public HashMap<String, String> startJob(String confLocalPath, String receptorLocalPath,
+        String ligandPath, String seed, int topK, String vinaJobID) {
+        return startJob(confLocalPath, receptorLocalPath, ligandPath, seed, topK, vinaJobID,100,false);
+    }
+    
+    
+    
+    
+    public  ArrayList<String> readLigand(String ligandPath) {
+        ArrayList<String> al = new ArrayList<String>();
+        File file = new File(ligandPath);
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(file);
+            br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                al.add(line);
+            }
+            br.close();
+            fr.close();
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return al;
+    }
+
+    public  HashMap<String, String> checkLigandPath(ArrayList<String> al) {
+        HashMap<String, String> hm = new HashMap<String, String>();
+        hm.put("flag", "false");
+        if (al.size() == 0) {
+            String log = "ligandPath is empth file";
+            System.out.println(" 文件内容为空，请检查ligandPath");
+            hm.put("log", log);
+            return hm;
+        }
+
+        Configuration conf;
+        try {
+            conf = (new HadoopConf()).getConf();
+            FileSystem fs = FileSystem.get(conf);
+            int i = 1;
+            for (String path : al) {
+                if(path.isEmpty()){
+                    System.out.println(path + " 请检查ligandPath 第 " + i + "行数据,该行数据为空");
+                    String log = "please check ligandPath ,lineNumber"+i+" is empty";
+                    hm.put("log", log);
+                    return hm;
+                }
+                Path src = new Path(path);
+                if (!fs.exists(src)) {
+                    System.out.println(path + " 文件不存在，请检查ligandPath 第 " + i + "行数据");
+                    String log = "please check ligandPath ,lineNumber"+i+" file does not exist";
+                    hm.put("log", log);
+                    return hm;
+                }
+                i++;
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            hm.put("log", e.toString());
+            return hm;
+        }
+        hm.put("flag", "true");
+        return hm;
+    }
+
 }
