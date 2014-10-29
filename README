@@ -4,10 +4,15 @@
 janus is a platform for parallel vina job(molecular docking) 
 
 主要实现功能：
+
 1）	分布式文件系统，存储海量的蛋白文件（Hbase）
+
 2）	分布式处理框架，并行跑vina任务(MapReduce)
+
 3）	Hadoop自动部署脚本
+
 4）	Hadoop vina集群监控系统，提供细粒度的监控(ganglia)
+
 5)  大规模筛选结果的分布式topK 排序
 
 
