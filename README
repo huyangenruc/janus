@@ -10,8 +10,6 @@ janus is a platform for parallel vina job(molecular docking)
 4）	Hadoop vina集群监控系统，提供细粒度的监控(ganglia)
 5)  大规模筛选结果的分布式topK 排序
 
-架构：
-
 
 
 designed by huyangen
